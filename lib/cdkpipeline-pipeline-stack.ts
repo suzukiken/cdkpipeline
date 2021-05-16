@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as cdk from '@aws-cdk/core';
-import { CdkPipeline, SimpleSynthAction } from "@aws-cdk/pipelines";
+import { CdkPipeline, SimpleSynthAction, ShellScriptAction } from "@aws-cdk/pipelines";
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CdkpipelineStage } from './cdkpipeline-stage';
 
@@ -38,9 +38,21 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
             buildCommand: 'npm run build'
         }),
     })
+    
+    const preprod = new CdkpipelineStage(this, 'PreProd', {
+      env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
+    })
 
-    pipeline.addApplicationStage(new CdkpipelineStage(this, 'PreProd', {
-      env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+    const preprodStage = pipeline.addApplicationStage(preprod)
+    
+    preprodStage.addActions(new ShellScriptAction({
+      actionName: 'TestService',
+      useOutputs: {
+        ENDPOINT_URL: pipeline.stackOutput(preprod.urlOutput),
+      },
+      commands: [
+        'curl -Ssf $ENDPOINT_URL',
+      ],
     }))
   }
 }
