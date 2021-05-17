@@ -7,6 +7,7 @@ import * as path from 'path';
 export class CdkpipelineStack extends cdk.Stack {
 
   public readonly urlOutput: cdk.CfnOutput;
+  public readonly urlPyOutput: cdk.CfnOutput;
  
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -20,25 +21,34 @@ export class CdkpipelineStack extends cdk.Stack {
     })
     */
     
-    new lambda.Function(this, 'Python', {
+    const python_handler = new lambda.Function(this, 'PythonLambda', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
       handler: 'main.lambda_handler',
       runtime: lambda.Runtime.PYTHON_3_8,
     })
     
-    const handler = new lambda.Function(this, 'Lambda', {
+    const node_handler = new lambda.Function(this, 'NodeLambda', {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'handler.handler',
       code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
     })
     
-    const gw = new apigw.LambdaRestApi(this, 'Gateway', {
-      description: 'Endpoint for a simple Lambda-powered web service',
-      handler,
+    const python_gw = new apigw.LambdaRestApi(this, 'PythonGateway', {
+      description: 'Endpoint for a simple Python Lambda-powered web service',
+      handler: python_handler,
+    })
+    
+    const node_gw = new apigw.LambdaRestApi(this, 'NodeGateway', {
+      description: 'Endpoint for a simple Node Lambda-powered web service',
+      handler: node_handler,
+    })
+    
+    this.urlPyOutput = new cdk.CfnOutput(this, 'PythonUrl', {
+      value: python_gw.url,
     });
 
-    this.urlOutput = new cdk.CfnOutput(this, 'Url', {
-      value: gw.url,
+    this.urlOutput = new cdk.CfnOutput(this, 'NodeUrl', {
+      value: node_gw.url,
     });
   }
 }

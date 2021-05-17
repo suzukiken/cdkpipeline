@@ -49,9 +49,11 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
       actionName: 'TestService',
       useOutputs: {
         ENDPOINT_URL: pipeline.stackOutput(preprod.urlOutput),
+        ENDPOINT_PY_URL: pipeline.stackOutput(preprod.urlPyOutput),
       },
       commands: [
         'curl -Ssf $ENDPOINT_URL',
+        'curl -Ssf $ENDPOINT_PY_URL',
       ],
     }))
   }
