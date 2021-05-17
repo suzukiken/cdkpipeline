@@ -20,6 +20,12 @@ export class CdkpipelineStack extends cdk.Stack {
     })
     */
     
+    new lambda.Function(this, 'Python', {
+      code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
+      handler: 'main.lambda_handler',
+      runtime: lambda.Runtime.PYTHON_3_8,
+    })
+    
     const handler = new lambda.Function(this, 'Lambda', {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'handler.handler',
