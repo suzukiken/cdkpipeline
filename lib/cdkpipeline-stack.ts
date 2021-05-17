@@ -21,10 +21,19 @@ export class CdkpipelineStack extends cdk.Stack {
     })
     */
     
-    const python_handler = new lambda.Function(this, 'PythonLambda', {
-      code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
-      handler: 'main.lambda_handler',
+    const python_handler = new lambda.Function(this, "PythonLambda", {
       runtime: lambda.Runtime.PYTHON_3_8,
+      code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda'), {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_8.bundlingDockerImage,
+          command: [
+            "bash",
+            "-c",
+            `pip install -r requirements.txt -t /asset-output && cp -au . /asset-output`,
+          ],
+        },
+      }),
+      handler: 'main.lambda_handler',
     })
     
     const node_handler = new lambda.Function(this, 'NodeLambda', {
@@ -36,7 +45,12 @@ export class CdkpipelineStack extends cdk.Stack {
     const python_gw = new apigw.LambdaRestApi(this, 'PythonGateway', {
       description: 'Endpoint for a simple Python Lambda-powered web service',
       handler: python_handler,
+      options: {
+        
+      }
     })
+    
+    // authorizationType
     
     const node_gw = new apigw.LambdaRestApi(this, 'NodeGateway', {
       description: 'Endpoint for a simple Node Lambda-powered web service',
@@ -45,10 +59,10 @@ export class CdkpipelineStack extends cdk.Stack {
     
     this.urlPyOutput = new cdk.CfnOutput(this, 'PythonUrl', {
       value: python_gw.url,
-    });
+    })
 
     this.urlOutput = new cdk.CfnOutput(this, 'NodeUrl', {
       value: node_gw.url,
-    });
+    })
   }
 }
