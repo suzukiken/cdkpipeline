@@ -3,15 +3,17 @@ import { CdkpipelineStack } from './cdkpipeline-stack';
 
 export class CdkpipelineStage extends cdk.Stage {
 
-  public readonly urlOutput: cdk.CfnOutput;
-  public readonly urlPyOutput: cdk.CfnOutput;
-  
+  public readonly apiUrlOutput: cdk.CfnOutput;
+  public readonly queueUrlOutput: cdk.CfnOutput;
+  public readonly tableNameOutput: cdk.CfnOutput;
+ 
   constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
     super(scope, id, props);
 
     const service = new CdkpipelineStack(this, 'WebService');
     
-    this.urlOutput = service.urlOutput;
-    this.urlPyOutput = service.urlPyOutput;
+    this.apiUrlOutput = service.apiUrlOutput;
+    this.queueUrlOutput = service.queueUrlOutput;
+    this.tableNameOutput = service.tableNameOutput;
   }
 }

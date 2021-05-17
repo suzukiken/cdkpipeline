@@ -34,10 +34,11 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
         synthAction: SimpleSynthAction.standardNpmSynth({
             sourceArtifact,
             cloudAssemblyArtifact,
-         
             buildCommand: 'npm run build'
         }),
     })
+    
+    // CDK deploy
     
     const preprod = new CdkpipelineStage(this, 'PreProd', {
       env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
@@ -45,16 +46,19 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
 
     const preprodStage = pipeline.addApplicationStage(preprod)
     
+    // test the api deployment
+    
     preprodStage.addActions(new ShellScriptAction({
-      actionName: 'TestService',
+      actionName: 'ApiTestService',
       useOutputs: {
-        ENDPOINT_URL: pipeline.stackOutput(preprod.urlOutput),
-        ENDPOINT_PY_URL: pipeline.stackOutput(preprod.urlPyOutput),
+        ENDPOINT_PY_URL: pipeline.stackOutput(preprod.apiUrlOutput),
       },
       commands: [
-        'curl -Ssf $ENDPOINT_URL',
         'curl -Ssf $ENDPOINT_PY_URL',
       ],
     }))
+    
+    // test the queue deployment
+    
   }
 }
