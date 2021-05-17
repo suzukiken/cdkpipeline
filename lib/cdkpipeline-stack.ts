@@ -16,13 +16,13 @@ export class CdkpipelineStack extends cdk.Stack {
     super(scope, id, props);
     
     // for lambda and apigw test
-    const python_handler = new lambda.Function(this, 'PythonLambda', {
+    const python_handler = new lambda.Function(this, 'Handler', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
       handler: 'api.lambda_handler',
       runtime: lambda.Runtime.PYTHON_3_8,
     })
     
-    const python_gw = new apigw.LambdaRestApi(this, 'PythonGateway', {
+    const python_gw = new apigw.LambdaRestApi(this, 'ApiGateway', {
       description: 'Endpoint for a simple Python Lambda-powered web service',
       handler: python_handler,
     })
@@ -40,14 +40,14 @@ export class CdkpipelineStack extends cdk.Stack {
 
     // queue
 
-    const queue = new sqs.Queue(this, "queue", {
+    const queue = new sqs.Queue(this, "Queue", {
       retentionPeriod: cdk.Duration.minutes(10),
       visibilityTimeout: cdk.Duration.seconds(15),
     })
     
     // Lambda
     
-    const consume_handler = new lambda.Function(this, 'PythonLambda', {
+    const consume_handler = new lambda.Function(this, 'Consumer', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
       handler: 'consumer.lambda_handler',
       runtime: lambda.Runtime.PYTHON_3_8,
