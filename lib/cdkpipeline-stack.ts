@@ -34,7 +34,7 @@ export class CdkpipelineStack extends cdk.Stack {
     // Lambda
     
     const consume_handler = new lambda.Function(this, 'Consumer', {
-      code: lambda.Code.fromAsset(path.resolve(__dirname, 'lambda')),
+      code: lambda.Code.fromAsset(path.resolve('../../lambda')),
       handler: 'consumer.lambda_handler',
       runtime: lambda.Runtime.PYTHON_3_8,
       environment: {
