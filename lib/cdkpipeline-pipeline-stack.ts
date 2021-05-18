@@ -19,23 +19,23 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
     const cloudAssemblyArtifact = new codepipeline.Artifact();
     
     const source_action = new codepipeline_actions.BitBucketSourceAction({
-        actionName: 'GitHub',
-        owner: owner,
-        repo: repository,
-        branch: branch,
-        connectionArn: codestararn,
-        output: sourceArtifact,
+      actionName: 'GitHub',
+      owner: owner,
+      repo: repository,
+      branch: branch,
+      connectionArn: codestararn,
+      output: sourceArtifact,
     })
     
     const pipeline = new CdkPipeline(this, 'Pipeline', {
-        pipelineName: 'CdkpipelinePipeline',
+      pipelineName: 'CdkpipelinePipeline',
+      cloudAssemblyArtifact,
+      sourceAction: source_action,
+      synthAction: SimpleSynthAction.standardNpmSynth({
+        sourceArtifact,
         cloudAssemblyArtifact,
-        sourceAction: source_action,
-        synthAction: SimpleSynthAction.standardNpmSynth({
-            sourceArtifact,
-            cloudAssemblyArtifact,
-            buildCommand: 'npm run build'
-        }),
+        buildCommand: 'npm run build'
+      }),
     })
     
     // CDK deploy
@@ -60,5 +60,14 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
     
     // test the queue deployment
     
+    preprodStage.addActions(new ShellScriptAction({
+      actionName: 'SqsTestService',
+      useOutputs: {
+        QUEUE_URL: pipeline.stackOutput(preprod.queueUrlOutput),
+      },
+      commands: [
+        'aws sqs send-message --queue-url $QUEUE_URL --message-body hello',
+      ],
+    }))
   }
 }

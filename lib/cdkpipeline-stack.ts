@@ -62,7 +62,8 @@ export class CdkpipelineStack extends cdk.Stack {
       })
     );
 
-    queue.grantConsumeMessages(consume_handler);
+    queue.grantConsumeMessages(consume_handler)
+    table.grantReadWriteData(consume_handler)
 
     // output
     
