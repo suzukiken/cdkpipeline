@@ -69,7 +69,8 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
         TABLE_NAME: pipeline.stackOutput(preprod.tableNameOutput),
       },
       commands: [
-        'sh test/sqs2dynamo.sh'
+        'sh test/sqs2dynamo.sh',
+        'python test/scan.py'
       ],
       /*
       commands: [
