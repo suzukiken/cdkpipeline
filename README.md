@@ -1,14 +1,7 @@
-# Welcome to your CDK TypeScript project!
+Example CDK TypeScript Project
 
-This is a blank project for TypeScript development with CDK.
+To deploy Queue, Lambda Function, and a Dynamo DB Table with CDK Pipeline.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+The Pipeline starts when you push the code to the Github repository.
 
-## Useful commands
-
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+[description](https://note.figmentresearch.com/aws/cdkpipeline)
