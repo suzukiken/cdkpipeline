@@ -71,7 +71,7 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
       commands: [
         'pwd',
         'ls',
-        './test.sh'
+        './test/sqs2dynamo.sh'
       ],
       /*
       commands: [
