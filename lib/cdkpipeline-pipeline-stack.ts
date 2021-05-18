@@ -47,38 +47,18 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
 
     const preprodStage = pipeline.addApplicationStage(preprod)
     
-    // test the api deployment
-    
-    preprodStage.addActions(new ShellScriptAction({
-      actionName: 'ApiTestService',
-      useOutputs: {
-        ENDPOINT_PY_URL: pipeline.stackOutput(preprod.apiUrlOutput),
-      },
-      commands: [
-        'curl -Ssf $ENDPOINT_PY_URL',
-      ],
-    }))
-    
     // test the queue deployment
     
     preprodStage.addActions(new ShellScriptAction({
-      actionName: 'SqsTestService',
-      additionalArtifacts: [sourceArtifact], // for test.sh
+      actionName: 'SqsToDynamoTest',
+      additionalArtifacts: [sourceArtifact], // include test-sqs2dynamo.py
       useOutputs: {
         QUEUE_URL: pipeline.stackOutput(preprod.queueUrlOutput),
         TABLE_NAME: pipeline.stackOutput(preprod.tableNameOutput),
       },
       commands: [
-        'sh test/sqs2dynamo.sh',
-        'python test/scan.py'
+        'python test/test-sqs2dynamo.py'
       ],
-      /*
-      commands: [
-        'aws sqs send-message --queue-url $QUEUE_URL --message-body hello',
-        'sleep 5',
-        'aws dynamodb scan --table-name $TABLE_NAME'
-      ],
-      */
       rolePolicyStatements: [
         new iam.PolicyStatement({
           actions: ['sqs:*'],

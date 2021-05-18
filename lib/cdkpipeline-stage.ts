@@ -12,7 +12,6 @@ export class CdkpipelineStage extends cdk.Stage {
 
     const service = new CdkpipelineStack(this, 'WebService');
     
-    this.apiUrlOutput = service.apiUrlOutput;
     this.queueUrlOutput = service.queueUrlOutput;
     this.tableNameOutput = service.tableNameOutput;
   }
