@@ -3,6 +3,7 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as cdk from '@aws-cdk/core';
 import { CdkPipeline, SimpleSynthAction, ShellScriptAction } from "@aws-cdk/pipelines";
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as iam from '@aws-cdk/aws-iam';
 import { CdkpipelineStage } from './cdkpipeline-stage';
 
 export class CdkpipelinePipelineStack extends cdk.Stack {
@@ -64,10 +65,23 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
       actionName: 'SqsTestService',
       useOutputs: {
         QUEUE_URL: pipeline.stackOutput(preprod.queueUrlOutput),
+        TABLE_NAME: pipeline.stackOutput(preprod.tableNameOutput),
       },
       commands: [
         'aws sqs send-message --queue-url $QUEUE_URL --message-body hello',
+        'sleep 5',
+        'aws dynamodb scan --table-name $TABLE_NAME'
       ],
+      rolePolicyStatements: [
+        new iam.PolicyStatement({
+          actions: ['sqs:*'],
+          resources: ['*'],
+        }),
+        new iam.PolicyStatement({
+          actions: ['dynamodb:Scan'],
+          resources: ['*'],
+        }),
+      ]
     }))
   }
 }
