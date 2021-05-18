@@ -67,11 +67,14 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
         QUEUE_URL: pipeline.stackOutput(preprod.queueUrlOutput),
         TABLE_NAME: pipeline.stackOutput(preprod.tableNameOutput),
       },
+      commands: ['./test.sh'],
+      /*
       commands: [
         'aws sqs send-message --queue-url $QUEUE_URL --message-body hello',
         'sleep 5',
         'aws dynamodb scan --table-name $TABLE_NAME'
       ],
+      */
       rolePolicyStatements: [
         new iam.PolicyStatement({
           actions: ['sqs:*'],
