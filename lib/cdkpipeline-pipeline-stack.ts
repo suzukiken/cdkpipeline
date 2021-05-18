@@ -63,6 +63,7 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
     
     preprodStage.addActions(new ShellScriptAction({
       actionName: 'SqsTestService',
+      additionalArtifacts: [sourceArtifact], // for test.sh
       useOutputs: {
         QUEUE_URL: pipeline.stackOutput(preprod.queueUrlOutput),
         TABLE_NAME: pipeline.stackOutput(preprod.tableNameOutput),
