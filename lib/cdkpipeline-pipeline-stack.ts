@@ -29,6 +29,7 @@ export class CdkpipelinePipelineStack extends cdk.Stack {
     })
     
     const pipeline = new CdkPipeline(this, 'Pipeline', {
+      crossAccountKeys: false,
       pipelineName: 'CdkpipelinePipeline',
       cloudAssemblyArtifact,
       sourceAction: source_action,
